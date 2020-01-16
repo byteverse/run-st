@@ -27,8 +27,11 @@ module Control.Monad.ST.Run
     -- * Tuples
   , runIntArrayST
   , runIntByteArrayST
+  , runIntIntByteArrayST
   , runWordArrayST
   , runWordByteArrayST
+    -- * Maybes
+  , runMaybeByteArrayST
   ) where
 
 import GHC.Word (Word8(W8#),Word16(W16#),Word32(W32#))
@@ -124,9 +127,26 @@ runIntByteArrayST f =
   let !(# t0, t1 #) = runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, ( I# r0, ByteArray r1 ) #) -> (# r0, r1 #) }})
    in (I# t0, ByteArray t1)
 
+runIntIntByteArrayST :: (forall s. ST s (Int, Int, ByteArray)) -> (Int, Int, ByteArray)
+{-# inline runIntIntByteArrayST #-}
+runIntIntByteArrayST f =
+  let !(# t0, t1, t2 #) = runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, ( I# r0, I# r1, ByteArray r2 ) #) -> (# r0, r1, r2 #) }})
+   in (I# t0, I# t1, ByteArray t2)
+
 runWordByteArrayST :: (forall s. ST s (Word, ByteArray)) -> (Word, ByteArray)
 {-# inline runWordByteArrayST #-}
 runWordByteArrayST f =
   let !(# t0, t1 #) = runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, ( W# r0, ByteArray r1 ) #) -> (# r0, r1 #) }})
    in (W# t0, ByteArray t1)
 
+runMaybeByteArrayST :: (forall s. ST s (Maybe ByteArray)) -> Maybe ByteArray
+{-# inline runMaybeByteArrayST #-}
+runMaybeByteArrayST f =
+  let !x = runRW#
+        (\s0 -> case f of { ST g -> case g s0 of
+          { (# _, Just (ByteArray r2 ) #) -> (# | r2 #)
+          ; (# _, Nothing #) -> (# (# #) | #)
+          }})
+   in case x of
+        (# (# #) | #) -> Nothing
+        (# | y #) -> Just (ByteArray y)
