@@ -1,4 +1,5 @@
 {-# language BangPatterns #-}
+{-# language KindSignatures #-}
 {-# language MagicHash #-}
 {-# language RankNTypes #-}
 {-# language UnboxedTuples #-}
@@ -27,6 +28,7 @@ module Control.Monad.ST.Run
     -- * Tuples
   , runIntArrayST
   , runIntByteArrayST
+  , runIntLiftedTypeST
   , runIntIntByteArrayST
   , runWordArrayST
   , runWordByteArrayST
@@ -34,16 +36,17 @@ module Control.Monad.ST.Run
   , runMaybeByteArrayST
   ) where
 
-import GHC.Word (Word8(W8#),Word16(W16#),Word32(W32#))
-import GHC.Int (Int8(I8#),Int16(I16#),Int32(I32#))
-import GHC.Exts (Char(C#),Int(I#),Word(W#),runRW#)
-import GHC.Exts (Double(D#),Float(F#))
+import Data.Kind (Type)
 import Data.Primitive.Array (Array(Array))
-import Data.Primitive.SmallArray (SmallArray(SmallArray))
 import Data.Primitive.ByteArray (ByteArray(ByteArray))
 import Data.Primitive.PrimArray (PrimArray(PrimArray))
+import Data.Primitive.SmallArray (SmallArray(SmallArray))
 import Data.Primitive.Unlifted.Array (UnliftedArray(UnliftedArray))
+import GHC.Exts (Char(C#),Int(I#),Word(W#),runRW#)
+import GHC.Exts (Double(D#),Float(F#))
+import GHC.Int (Int8(I8#),Int16(I16#),Int32(I32#))
 import GHC.ST (ST(ST))
+import GHC.Word (Word8(W8#),Word16(W16#),Word32(W32#))
 
 runArrayST :: (forall s. ST s (Array a)) -> Array a
 {-# inline runArrayST #-}
@@ -120,6 +123,12 @@ runWordArrayST :: (forall s. ST s (Word, Array a)) -> (Word, Array a)
 runWordArrayST f =
   let !(# t0, t1 #) = runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, ( W# r0, Array r1 ) #) -> (# r0, r1 #) }})
    in (W# t0, Array t1)
+
+runIntLiftedTypeST :: forall (a :: Type). (forall s. ST s (Int, a)) -> (Int, a)
+{-# inline runIntLiftedTypeST #-}
+runIntLiftedTypeST f =
+  let !(# t0, t1 #) = runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, ( I# r0, r1 ) #) -> (# r0, r1 #) }})
+   in (I# t0, t1)
 
 runIntByteArrayST :: (forall s. ST s (Int, ByteArray)) -> (Int, ByteArray)
 {-# inline runIntByteArrayST #-}

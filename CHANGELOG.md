@@ -1,8 +1,9 @@
 # Revision history for run-st
 
-## 0.1.2.0 -- 2020-??-??
+## 0.1.2.0 -- 2023-05-03
 
 * Add `runIntIntByteArrayST`
+* Add `runIntLiftedTypeST`
 * Add `runMaybeByteArrayST`
 
 ## 0.1.1.0 -- 2020-01-16
