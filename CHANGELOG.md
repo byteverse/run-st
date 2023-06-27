@@ -1,6 +1,10 @@
 # Revision history for run-st
 
-## 0.1.2.0 -- 2023-05-03
+## 0.1.3.1 -- 2023-06-27
+
+* Depend on newer version of primitive-unlifted.
+
+## 0.1.3.0 -- 2023-05-03
 
 * Add `runIntIntByteArrayST`
 * Add `runIntLiftedTypeST`
