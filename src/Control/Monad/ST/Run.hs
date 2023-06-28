@@ -41,7 +41,7 @@ import Data.Primitive.Array (Array(Array))
 import Data.Primitive.ByteArray (ByteArray(ByteArray))
 import Data.Primitive.PrimArray (PrimArray(PrimArray))
 import Data.Primitive.SmallArray (SmallArray(SmallArray))
-import Data.Primitive.Unlifted.Array (UnliftedArray,UnliftedArray_(UnliftedArray))
+import Data.Primitive.Unlifted.Array (UnliftedArray_(UnliftedArray))
 import GHC.Exts (Char(C#),Int(I#),Word(W#),runRW#)
 import GHC.Exts (Double(D#),Float(F#))
 import GHC.Int (Int8(I8#),Int16(I16#),Int32(I32#))
@@ -64,7 +64,7 @@ runPrimArrayST :: (forall s. ST s (PrimArray a)) -> PrimArray a
 {-# inline runPrimArrayST #-}
 runPrimArrayST f = PrimArray (runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, PrimArray r #) -> r }}))
 
-runUnliftedArrayST :: (forall s. ST s (UnliftedArray a)) -> UnliftedArray a
+runUnliftedArrayST :: (forall s. ST s (UnliftedArray_ unlifted_a a)) -> UnliftedArray_ unlifted_a a
 {-# inline runUnliftedArrayST #-}
 runUnliftedArrayST f = UnliftedArray (runRW# (\s0 -> case f of { ST g -> case g s0 of { (# _, UnliftedArray r #) -> r }}))
 

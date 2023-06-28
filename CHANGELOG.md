@@ -1,5 +1,9 @@
 # Revision history for run-st
 
+## 0.1.3.2 -- 2024-06-28
+
+* Make type signature of `runUnliftedArrayST` more flexible.
+
 ## 0.1.3.1 -- 2023-06-27
 
 * Depend on newer version of primitive-unlifted.
