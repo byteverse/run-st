@@ -1,6 +1,10 @@
 # Revision history for run-st
 
-## 0.1.3.2 -- 2024-06-28
+## 0.1.3.3 -- 2024-02-06
+
+* Update package metadata.
+
+## 0.1.3.2 -- 2023-06-28
 
 * Make type signature of `runUnliftedArrayST` more flexible.
 
